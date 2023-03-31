@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <script src="https://d3js.org/d3.v4.js"></script> -->
+    <title></title>
+
+    <style media="screen">
+      body{
+        margin: 0;
+        background-color: #f5f5f5;
+        font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+
+      .container{
+        width: 100vw;
+        height: 100vh;
+        /* container will occupy 100% of the webpage space   */
+
+      
+        font-size: 20px;
+
+        display: grid;
+
+        
+
+        grid-template: 50px 1fr 1fr / repeat(4, 1fr);
+
+        gap: 10px;
+        padding: 10px;
+        box-sizing: border-box;
+      }
+
+      .container div {
+        background-color: #fdfdff;
+        padding: 10px;
+        /* border: 1px solid black; */
+        border-radius: 0.5em;
+        box-shadow: 2px 3px 7px 2px rgba(0,0,0,0.02);
+      }
+
+     
+      .header {
+        grid-column-start: 1;
+        grid-column-end: 5;
+        text-align: center;
+        font-size: smaller;
+        transform: translateY(-20px);
+      }
+
+      .content-geomap{
+        grid-column-start: 2;
+        grid-column-end: span 2;
+        margin: auto auto;
+      }
+
+      .content-small{
+        /* They flow naturally*/
+      }
+
+      .content-pie{
+        /* They flow naturally*/
+        margin: auto auto;
+      }
+
+      .content-bar{
+        /* They flow naturally*/
+        margin: auto auto;
+      }
+
+      .content-income{
+        /* They flow naturally*/
+        display: none;
+      }
+
+      .content-stats{
+        /* They flow naturally*/
+        margin: auto auto;
+      }
+
+      .content-pc{
+        /*
+        grid-column-start: 1;
+        grid-column-end: 4;
+        */
+        /* or short hand */
+
+        /* grid-column: 1 / span 3; */
+        grid-column-start: 2;
+        grid-column-end: span 2;
+        margin: auto auto;
+      }
+
+      @import url(https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Josefin+Slab|Arvo|Lato|Vollkorn|Abril+Fatface|Old+Standard+TT|Droid+Sans|Lobster|Inconsolata|Montserrat|Playfair+Display|Karla|Alegreya|Libre+Baskerville|Merriweather|Lora|Archivo+Narrow|Neuton|Signika|Questrial|Fjalla+One|Bitter|Varela+Round);
+
+.background {
+  fill: #eee;
+  pointer-events: all;
+  
+}
+
+.map-layer {
+  fill: #fff;
+  stroke: #aaa;
+  
+}
+
+.district-layer {
+  display: none;
+}
+
+.house-layer {
+  display: none;
+}
+
+
+.effect-layer{
+  pointer-events:none;
+}
+
+text{
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 300;
+}
+
+text.big-text{
+  font-size: 30px;
+  font-weight: 400;
+}
+
+.effect-layer text, text.dummy-text{
+  font-size: 12px;
+}
+
+#pie2{
+  display:block;
+}
+
+#boro {
+    display:block;
+}
+#district {
+    display: none;
+}
+
+svg {
+  font: 10px sans-serif;
+}
+
+.background path {
+  fill: none;
+  stroke: #ddd;
+  shape-rendering: crispEdges;
+}
+
+.foreground path {
+  fill: none;
+}
+
+.brush .extent {
+  fill-opacity: .3;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+  cursor: move;
+}
+
+button {
+  border-color: rgba(0, 0, 0, 0.048);
+  border-radius: 0.5em;
+  box-shadow: 2px 3px 7px 2px rgba(0,0,0,0.02);
+  height: 30px;
+  translate: 450px;
+  margin: 0px 10px;
+}
+
+button:active {
+  background-color: rgb(172, 172, 172);
+  
+}
+
+.fact{
+  font-size: 50px;
+  color: rgb(63, 61, 61);
+}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- NOTE: header taking up a single column and single row
+
+    need to make it span remaining columns -->
+      <div class="header">
+        <h1>NYC SCHOOL DATA</h1>
+      </div>
+      <div class="content-pie">
+        <svg id="pie2" onclick="b6()" width="600" height="500" style="display: block;"><g transform="translate(300,250)"><g class="arc"><path fill="#4daf4a" d="M9.593066593320933e-15,-156.66666666666666A156.66666666666666,156.66666666666666,0,0,1,142.9588999146595,64.08741982350989L0,0Z"></path><text transform="translate(165.0752004726168,-106.90161816690681)" dy="1.2em" dx="-2em">Manhattan</text></g><g class="arc"><path fill="#377eb8" d="M-144.5489765727124,-60.41554283647444A156.66666666666666,156.66666666666666,0,0,1,-39.58121219563702,-151.58420790296196L0,0Z"></path><text transform="translate(-128.96174711397967,-148.48112862949193)" dy="1.2em" dx="-2em">Bronx</text></g><g class="arc"><path fill="#ff7f00" d="M-80.05959311338053,134.66590509466155A156.66666666666666,156.66666666666666,0,0,1,-144.5489765727124,-60.41554283647444L0,0Z"></path><text transform="translate(-186.72822855820573,61.72800367169068)" dy="1.2em" dx="-2em">Brooklyn</text></g><g class="arc"><path fill="#984ea3" d="M142.9588999146595,64.08741982350989A156.66666666666666,156.66666666666666,0,0,1,-80.05959311338053,134.66590509466155L0,0Z"></path><text transform="translate(59.33838439038788,187.50129043746963)" dy="1.2em" dx="-2em">Queens</text></g><g class="arc"><path fill="#e41a1c" d="M-39.58121219563702,-151.58420790296196A156.66666666666666,156.66666666666666,0,0,1,-1.6792715219964906e-13,-156.66666666666666L0,0Z"></path><text transform="translate(-25.047500233744582,-195.06511863943882)" dy="1.2em" dx="-2em">StatenIsland</text></g></g><text transform="translate(20,0)" x="100" y="20" font-size="24px">Boroughs with most schools over 95% Grad</text><g transform="translate(300,250)"><g class="arc"><path fill="#4daf4a" d="M9.593066593320933e-15,-156.66666666666666A156.66666666666666,156.66666666666666,0,0,1,142.9588999146595,64.08741982350989L0,0Z" opacity="1" style=""></path><text transform="translate(165.0752004726168,-106.90161816690681)" dy="1.2em" dx="-2em">Manhattan</text></g><g class="arc"><path fill="#377eb8" d="M-144.5489765727124,-60.41554283647444A156.66666666666666,156.66666666666666,0,0,1,-39.58121219563702,-151.58420790296196L0,0Z" opacity="1" style=""></path><text transform="translate(-128.96174711397967,-148.48112862949193)" dy="1.2em" dx="-2em">Bronx</text></g><g class="arc"><path fill="#ff7f00" d="M-80.05959311338053,134.66590509466155A156.66666666666666,156.66666666666666,0,0,1,-144.5489765727124,-60.41554283647444L0,0Z" style="" opacity="1"></path><text transform="translate(-186.72822855820573,61.72800367169068)" dy="1.2em" dx="-2em">Brooklyn</text></g><g class="arc"><path fill="#984ea3" d="M142.9588999146595,64.08741982350989A156.66666666666666,156.66666666666666,0,0,1,-80.05959311338053,134.66590509466155L0,0Z" style="" opacity="1"></path><text transform="translate(59.33838439038788,187.50129043746963)" dy="1.2em" dx="-2em">Queens</text></g><g class="arc"><path fill="#e41a1c" d="M-39.58121219563702,-151.58420790296196A156.66666666666666,156.66666666666666,0,0,1,-1.6792715219964906e-13,-156.66666666666666L0,0Z" opacity="1" style=""></path><text transform="translate(-25.047500233744582,-195.06511863943882)" dy="1.2em" dx="-2em" style="">StatenIsland</text></g></g><text transform="translate(20,0)" x="100" y="20" font-size="24px" style="">Boroughs with most schools over 95% Grad</text></svg>
+      </div>
+      <div class="content-geomap">
+        <button id="DI" onclick="dists()">districts</button>
+        <button id="HO" onclick="house()">nycha</button>
+        <svg id="boro"></svg>
+      </div>
+      <div class="content-bar">
+        <div><svg id="bar" width="600" height="500">
+          <text class="heading" transform="translate(20,0)" x="50" y="50" font-size="24px">
+              Percentage of Schools with SAT score over avg</text>
+              <g transform="translate(100,100)"><g transform="translate(0,300)" fill="none" font-size="10" 
+                  font-family="sans-serif" text-anchor="middle"><path class="domain" stroke="#000" d="M0.5,6V0.5H400.5V6">
+  
+                  </path><g class="tick" opacity="1" transform="translate(51.85185185185187,0)"><line stroke="#000" y2="6">
+  
+                  </line><text fill="#000" y="9" dy="0.71em">Manhattan</text></g><g class="tick" opacity="1" 
+                  transform="translate(125.92592592592595,0)"><line stroke="#000" y2="6"></line><text fill="#000" 
+                  y="9" dy="0.71em">Bronx</text></g><g class="tick" opacity="1" transform="translate(200.00000000000003,0)">
+                      <line stroke="#000" y2="6"></line><text fill="#000" y="9" dy="0.71em">Brooklyn</text>
+                  </g><g class="tick" opacity="1" transform="translate(274.0740740740741,0)"><line stroke="#000" y2="6">
+  
+                  </line><text fill="#000" y="9" dy="0.71em">Queens</text>
+              </g><g class="tick" opacity="1" transform="translate(348.1481481481482,0)">
+                  <line stroke="#000" y2="6"></line><text fill="#000" y="9" dy="0.71em">StatenIsland</text>
+              </g></g><g fill="none" font-size="10" font-family="sans-serif" text-anchor="end" class="yscale">
+                  <path class="domain" stroke="#000" d="M-6,300.5H0.5V0.5H-6">
+  
+                  </path><g class="tick" opacity="1" transform="translate(0,300.5)">
+                      <line stroke="#000" x2="-6"></line><text fill="#000" x="-9" dy="0.32em">0%</text></g>
+                      <g class="tick" opacity="1" transform="translate(0,270.5)"><line stroke="#000" x2="-6">
+  
+                      </line><text fill="#000" x="-9" dy="0.32em">5%</text></g>
+                      <g class="tick" opacity="1" transform="translate(0,240.5)">
+                          <line stroke="#000" x2="-6"></line><text fill="#000" x="-9" dy="0.32em">10%</text>
+                      </g><g class="tick" opacity="1" transform="translate(0,210.5)"><line stroke="#000" x2="-6">
+  
+                      </line><text fill="#000" x="-9" dy="0.32em">15%</text></g>
+                      <g class="tick" opacity="1" transform="translate(0,180.5)">
+                          <line stroke="#000" x2="-6"></line><text fill="#000" x="-9" dy="0.32em">20%</text>
+                      </g><g class="tick" opacity="1" transform="translate(0,150.5)"><line stroke="#000" x2="-6">
+  
+                      </line><text fill="#000" x="-9" dy="0.32em">25%</text></g>
+                      <g class="tick" opacity="1" transform="translate(0,120.5)">
+                          <line stroke="#000" x2="-6"></line><text fill="#000" x="-9" dy="0.32em">30%</text>
+                      </g><g class="tick" opacity="1" transform="translate(0,90.5)"><line stroke="#000" x2="-6">
+  
+                      </line><text fill="#000" x="-9" dy="0.32em">35%</text></g>
+                      <g class="tick" opacity="1" transform="translate(0,60.5)">
+                          <line stroke="#000" x2="-6"></line><text fill="#000" x="-9" dy="0.32em">40%</text>
+                      </g><g class="tick" opacity="1" transform="translate(0,30.5)"><line stroke="#000" x2="-6">
+  
+                      </line><text fill="#000" x="-9" dy="0.32em">45%</text></g>
+                      <g class="tick" opacity="1" transform="translate(0,0.5)">
+                          <line stroke="#000" x2="-6"></line><text fill="#000" x="-9" dy="0.32em">50%</text>
+                      </g></g><rect class="bar" id = "Manhattan" x="29.629629629629648" y="174" width="44.44444444444444" height="126" fill="steelblue" onclick="changefill('Manhattan', 0)">
+  
+                      </rect><rect class="bar" id = "Bronx" x="103.70370370370372" y="289.2" width="44.44444444444444" height="10.800000000000011" fill="steelblue" onclick="changefill('Bronx', 1)">
+  
+                      </rect><rect class="bar" id = "Brooklyn" x="177.7777777777778" y="258" width="44.44444444444444" height="42" fill="steelblue" onclick="changefill('Brooklyn', 2)">
+  
+                      </rect><rect class="bar" id = "Queens" x="251.85185185185188" y="186" width="44.44444444444444" height="114" fill="steelblue" onclick="changefill('Queens', 3)">
+  
+                      </rect><rect class="bar" id = "StatenIsland" x="325.925925925926" y="192" width="44.44444444444444" height="108" fill="steelblue" onclick="changefill('StatenIsland', 4)"></rect></g></svg>
+                  </div>
+      </div>
+      <!-- <div class="content-large">
+        Content 2
+      </div> -->
+      <div class="content-income">
+        income
+      </div>
+      <div class="content-pc">
+        <div id="my_dataviz"></div>
+    </div>
+    <div class="content-stats">
+      <h1 class="st-desc">Districts </h1>
+      <p class="fact" id="dist">32</p>
+      <h1 class="st-desc">Schools</h1>
+      <p class="fact" id="schools">421</p>
+      <h1 class="st-desc">Students</h1>
+      <p class="fact" id="students">169,736</p>
+    </div>
+    </div>
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+    <script>
+
+function tesstt(){
+  
+d3.csv("HSData42.csv", function(data) {
+
+  var margin = {top: 30, right: 10, bottom: 10, left: 0},
+      width = 960 - margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;
+    
+    
+    var svg = d3.select("#my_dataviz")
+    .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+  
+  dimensions = d3.keys(data[0]).filter(function(d) { return d != "borough" && d != "clusters" })
+
+  
+  var y = {}
+  for (i in dimensions) {
+    name = dimensions[i]
+    y[name] = d3.scaleLinear()
+      .domain( d3.extent(data, function(d) { return +d[name]; }) )
+      .range([height, 0])
+  }
+
+  
+  x = d3.scalePoint()
+    .range([0, width])
+    .padding(1)
+    .domain(dimensions);
+
+
+  function path(d) {
+      return d3.line()(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
+  }
+
+  // Draw the lines
+
+  let def = "#8b9199";
+  
+  svg
+    .selectAll("myPath")
+    .data(data)
+    .enter().append("path")
+    .attr("d",  path)
+    .style("fill", "none")
+    .style("stroke", function(d){
+      if(localStorage.getItem('color') == "green"){
+        if(d.borough == "Manhattan"){
+          return localStorage.getItem('color');
+        }else{
+          return def;
+        }
+      }
+
+      if(localStorage.getItem('color') == "red"){
+        if(d.borough == "StatenIsland"){
+          return localStorage.getItem('color');
+        }else{
+          return def;
+        }
+      }
+
+      if(localStorage.getItem('color') == "blue"){
+        if(d.borough == "Bronx"){
+          return localStorage.getItem('color');
+        }else{
+          return def;
+        }
+      }
+
+      if(localStorage.getItem('color') == "purple"){
+        if(d.borough == "Queens"){
+          return localStorage.getItem('color');
+        }else{
+          return def;
+        }
+      }
+
+      if(localStorage.getItem('color') == "orange"){
+        if(d.borough == "Brooklyn"){
+          return localStorage.getItem('color');
+        }else{
+          return def;
+        }
+      }
+
+      if(localStorage.getItem('color') == "pink"){
+        return def;
+      }
+
+
+
+    })
+    .style("opacity", 0.5)
+
+  // Draw  axis:
+  svg.selectAll("myAxis")
+    
+    .data(dimensions).enter()
+    .append("g")
+    
+    .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
+   
+    .each(function(d) { d3.select(this).call(d3.axisLeft().scale(y[d])); })
+    //axis title
+    .append("text")
+      .style("text-anchor", "middle")
+      .attr("y", -9)
+      .text(function(d) { return d; })
+      .style("fill", "black")
+
+})
+
+
+
+}
+
+tesstt();
+
+      
+
+      
+        const stat_list = [[6, 104, 54021],[6, 110, 47470],[12, 115, 77844],[7, 81, 73991],[1, 11, 17901]];
+
+        var width = 960,
+            height = 500,
+            centered;
+        
+        // Define color scale
+        var color = d3.scaleLinear()
+          .domain([1, 20])
+          .clamp(true)
+          .range(['#fff', '#409A99']);
+        
+        var projection = d3.geoMercator()
+          .scale(45000)
+          .center([-73.935242, 40.730610])
+          .translate([width / 2, height / 2]);
+
+        
+        var path = d3.geoPath()
+          .projection(projection);
+
+        
+        
+        var svg = d3.select('#boro')
+          .attr('width', width)
+          .attr('height', height);
+
+        
+        var dists = d3.select('#dists');
+        var skool = d3.select('#schools');
+        var studs = d3.select('#students');
+
+        
+        svg.append('rect')
+          .attr('class', 'background')
+          .attr('width', width)
+          .attr('height', height)
+          .on('click', clicked);
+        
+        var g = svg.append('g');
+        
+        var effectLayer = g.append('g')
+          .classed('effect-layer', true);
+        
+        var mapLayer = g.append('g')
+          .classed('map-layer', true);
+
+        var houseLayer = g.append('g').classed("house-layer", true);
+
+        var districtLayer = g.append('g').classed("district-layer", true);
+        
+        var dummyText = g.append('text')
+          .classed('dummy-text', true)
+          .attr('x', 10)
+          .attr('y', 30)
+          .style('opacity', 0);
+        
+        var bigText = g.append('text')
+          .classed('big-text', true)
+          .attr('x', 20)
+          .attr('y', 45);
+
+        bigText.text('New York City')
+        
+        // Load map data
+        d3.json('boroughs.json', function(error, mapData) {
+          var features = mapData.features;
+
+      
+          color.domain([0, d3.max(features, nameLength)]);
+        
+          // Draw  path
+          mapLayer.selectAll('path')
+              .data(features)
+            .enter().append('path')
+              .attr('d', path)
+              .attr('vector-effect', 'non-scaling-stroke')
+              .style('fill', fillFn)
+              .on('mouseover', mouseover)
+              .on('mouseout', mouseout)
+              .on('click', clicked);
+        });
+
+        d3.json('nych.json', function(error, mapData) {
+          var features = mapData.features;
+        
+          houseLayer.selectAll('path')
+              .data(features)
+            .enter().append('path')
+              .attr('d', path)
+              .attr('vector-effect', 'non-scaling-stroke')
+              .style('fill', "red");
+
+            
+        
+        });
+
+
+        d3.json('d10.geojson', function(error, mapData) {
+          var features = mapData.features;
+
+          districtLayer.selectAll('path')
+              .data(features)
+            .enter().append('path')
+              .attr('d', path)
+              .style('fill', "none")
+              .style("stroke", "black")
+              .style("stroke-wdith", "1.8")
+              .style("opacity", ".33")
+              .on('click', clicked);
+        });
+
+        
+
+
+        
+       
+        function nameFn(d){
+          return d && d.properties ? d.properties.borough : null;
+        }
+        
+   
+        function nameLength(d){
+          var n = nameFn(d);
+          return n ? n.length : 0;
+        }
+        
+       
+        function fillFn(d){
+          return color(nameLength(d));
+        }
+        
+        
+        function clicked(d) {
+          var x, y, k;
+        
+          
+          if (d && centered !== d) {
+            var centroid = path.centroid(d);
+            x = centroid[0];
+            y = centroid[1];
+            k = 2.5;
+            centered = d;
+          } else {
+            x = width / 2;
+            y = height / 2;
+            k = 1;
+            centered = null;
+          }
+        
+          
+          mapLayer.selectAll('path')
+            .style('fill', function(d){return centered && d===centered ? '#D5708B' : fillFn(d);});
+        
+          
+          g.transition()
+            .duration(750)
+            .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')scale(' + k + ')translate(' + -x + ',' + -y + ')');
+
+          console.log(nameFn(d));
+
+          if(nameFn(d) == "Staten Island"){
+            localStorage.setItem("color", "red");
+            document.getElementById("dist").innerHTML = stat_list[4][0]
+            document.getElementById("schools").innerHTML = stat_list[4][1]
+            document.getElementById("students").innerHTML = stat_list[4][2]
+          }else if(nameFn(d) == "Manhattan"){
+            localStorage.setItem("color", "green");
+            document.getElementById("dist").innerHTML = stat_list[0][0]
+            document.getElementById("schools").innerHTML = stat_list[0][1]
+            document.getElementById("students").innerHTML = stat_list[0][2]
+          }else if(nameFn(d) == "Bronx"){
+            localStorage.setItem("color", "blue");
+            document.getElementById("dist").innerHTML = stat_list[1][0]
+            document.getElementById("schools").innerHTML = stat_list[1][1]
+            document.getElementById("students").innerHTML = stat_list[1][2]
+          }else if(nameFn(d) == "Queens"){
+            localStorage.setItem("color", "purple");
+            document.getElementById("dist").innerHTML = stat_list[3][0]
+            document.getElementById("schools").innerHTML = stat_list[3][1]
+            document.getElementById("students").innerHTML = stat_list[3][2]
+          }else if(nameFn(d) == "Brooklyn"){
+            localStorage.setItem("color", "orange");
+            document.getElementById("dist").innerHTML = stat_list[2][0]
+            document.getElementById("schools").innerHTML = stat_list[2][1]
+            document.getElementById("students").innerHTML = stat_list[2][2]
+          }
+
+          if(k == 1){
+            localStorage.setItem("color", "pink");
+            document.getElementById("dist").innerHTML = 32
+            document.getElementById("schools").innerHTML = 421
+            document.getElementById("students").innerHTML = "169,736"
+          }
+
+          document.getElementById("my_dataviz").innerHTML = " ";
+          tesstt();
+        }
+        
+        function mouseover(d){
+          
+          d3.select(this).style('fill', 'orange');
+        
+          
+          textArt(nameFn(d));
+        }
+        
+        function mouseout(d){
+          
+          mapLayer.selectAll('path')
+            .style('fill', function(d){return centered && d===centered ? '#D5708B' : fillFn(d);});
+        
+          
+          effectLayer.selectAll('text').transition()
+            .style('opacity', 0)
+            .remove();
+        
+          
+          bigText.text('New York City');
+        }
+        
+        
+        
+        var BASE_FONT = "'Helvetica Neue', Helvetica, Arial, sans-serif";
+        
+        var FONTS = [
+          "Open Sans",
+          "Josefin Slab",
+          "Arvo",
+          "Lato",
+          "Vollkorn",
+          "Abril Fatface",
+          "Old StandardTT",
+        ];
+        
+        function textArt(text){
+          // random font
+          var fontIndex = Math.round(Math.random() * FONTS.length);
+          var fontFamily = FONTS[fontIndex] + ', ' + BASE_FONT;
+        
+          bigText
+            .style('font-family', fontFamily)
+            .text(text);
+        
+        
+          dummyText
+            .style('font-family', fontFamily)
+            .text(text);
+          var bbox = dummyText.node().getBBox();
+        
+          var textWidth = bbox.width;
+          var textHeight = bbox.height;
+          var xGap = 3;
+          var yGap = 1;
+        
+
+          var selection = effectLayer.selectAll('text')
+          .data(positions, function(d){return d.text+'/'+d.index;});
+
+         
+          selection.exit().transition()
+            .style('opacity', 0)
+            .remove();
+        
+          
+          selection.enter().append('text')
+            .text(function(d){return d.text;})
+            .attr('x', function(d){return d.x;})
+            .attr('y', function(d){return d.y;})
+            .style('font-family', fontFamily)
+            .style('fill', '#777')
+            .style('opacity', 0);
+        
+          selection
+            .style('font-family', fontFamily)
+            .attr('x', function(d){return d.x;})
+            .attr('y', function(d){return d.y;});
+        
+          
+          selection.transition()
+            .delay(function(d){
+              return d.distance * 0.01 + Math.random()*1000;
+            })
+            .style('opacity', function(d){
+              return 0.1 + Math.random()*0.4;
+            });
+
+
+        }
+
+        function changefill(id,number){
+
+        const color_arr = ["#de382c", "#ff7f00", "#4daf4a", "#1b22f2", "#984ea3"];
+
+        
+        if(document.getElementById(id).style.fill == "steelblue"){
+            document.getElementById(id).style.fill = color_arr[number];
+
+            // localStorage.setItem(id, color_arr[number]);
+
+        }else{
+            document.getElementById(id).style.fill = "steelblue";
+            // localStorage.setItem(id, "steelblue");
+        }
+        
+
+        console.log(document.getElementById(id).style.fill);
+    }
+        
+        </script>
+        <script>
+          // bar chart
+          var ethnicity;
+    var zipIncome;
+    var dataCopy;
+    var sathEth;
+    var gradEth;
+    var gradListBorough;
+    var boroName;
+    var atZipMedian;
+    
+        function getAverage(arr){
+            let sum = 0;
+            for(var i=0;i<arr.length;i++){
+                sum += Number(arr[i]);
+            }
+            return (sum / arr.length).toPrecision(3);
+        }
+        d3.csv("ZipIncome.csv", function(error, data){
+            if(error){
+                throw error;
+            }
+
+
+            zipIncome=[];
+            data.map(function(datamap){
+                zipIncome.push({
+                    zipCode: datamap.Fips,
+                    zipAmt: Math.floor(datamap.Amount)
+                });
+            });
+
+            //console.log(zipIncome);
+        });
+        d3.csv("HSData.csv", function(error, data) {
+            if (error){
+                throw error;
+            }
+            const dbnKeys = new Map([
+                ["K","Brooklyn"],
+                ["X","Bronx"],
+                ["Q","Queens"],
+                ["M","Manhattan"],
+                ["R","StatenIsland"]
+            ])
+
+
+            function boroAP(b, arr){
+                if(b == "Manhattan"){
+                    arr[0] += 1;
+                }else if(b == "Bronx"){
+                    arr[1] += 1;
+                }else if(b == "Brooklyn"){
+                    arr[2] += 1;
+                }else if(b == "Queens"){
+                    arr[3] += 1;
+                }else if(b == "StatenIsland"){
+                    arr[4] += 1;
+                }
+            }
+
+            boroName = ["Manhattan", "Bronx", "Brooklyn","Queens","StatenIsland"];
+            var Boro = [0, 0, 0, 0, 0];
+            var Boro2 = [0, 0, 0, 0, 0];
+
+            var BoroN = [0, 0, 0, 0, 0];
+
+            var score = [800,1057, 1100, 1200, 1300];
+
+            gradListBorough = [[],[],[],[],[]];
+
+            satEth = [[],[],[],[]];
+            gradEth = [[],[],[],[]];
+            atZipMedian = [];
+
+            data.map(function(datamap){
+                datamap.borough = dbnKeys.get(datamap.dbn.charAt(2));
+                if(datamap.borough == "Manhattan" && datamap.APScoreQualified >= .5){
+                    Boro[0] += 1;
+                }else if(datamap.borough == "Bronx" && datamap.APScoreQualified >= .5){
+                    Boro[1] += 1;
+                }else if(datamap.borough == "Brooklyn" && datamap.APScoreQualified >= .5){
+                    Boro[2] += 1;
+                }else if(datamap.borough == "Queens" && datamap.APScoreQualified >= .5){
+                    Boro[3] += 1;
+                }else if(datamap.borough == "StatenIsland" && datamap.APScoreQualified >= .5){
+                    Boro[4] += 1;
+                }
+
+                datamap.satMath = Number(datamap.satMath);
+                datamap.satWrt = Number(datamap.satWrt);
+
+                if(datamap.borough == "Manhattan" && (datamap.satMath + datamap.satWrt) >= score[1]){
+                    Boro2[0] += 1;
+                }else if(datamap.borough == "Bronx" && (datamap.satMath + datamap.satWrt) >= score[1]){
+                    Boro2[1] += 1;
+                }else if(datamap.borough == "Brooklyn" && (datamap.satMath + datamap.satWrt) >= score[1]){
+                    Boro2[2] += 1;
+                }else if(datamap.borough == "Queens" && (datamap.satMath + datamap.satWrt) >= score[1]){
+                    Boro2[3] += 1;
+                }else if(datamap.borough == "StatenIsland" && (datamap.satMath + datamap.satWrt) >= score[1]){
+                    Boro2[4] += 1;
+                }
+
+                if(datamap.borough == "Manhattan" ){
+                    gradListBorough[0].push(Number(datamap.Graduation));
+                }else if(datamap.borough == "Bronx" ){
+                    gradListBorough[1].push(Number(datamap.Graduation));
+                }else if(datamap.borough == "Brooklyn" ){
+                    gradListBorough[2].push(Number(datamap.Graduation));
+                }else if(datamap.borough == "Queens" ){
+                    gradListBorough[3].push(Number(datamap.Graduation));
+                }else if(datamap.borough == "StatenIsland" ){
+                    gradListBorough[4].push(Number(datamap.Graduation));
+                }
+
+                if(datamap.borough == "Manhattan"){
+                    BoroN[0] += 1;
+                }else if(datamap.borough == "Bronx" ){
+                    BoroN[1] += 1;
+                }else if(datamap.borough == "Brooklyn" ){
+                    BoroN[2] += 1;
+                }else if(datamap.borough == "Queens" ){
+                    BoroN[3] += 1;
+                }else if(datamap.borough == "StatenIsland"){
+                    BoroN[4] += 1;
+                }
+                datamap.zip = datamap.address.slice(-5);
+                datamap.zipMedian = 0;
+                for (var i=0;i<181;i++){
+                    if(datamap.zip == String(zipIncome[i].zipCode)){
+                        datamap.zipMedian = zipIncome[i].zipAmt;
+                        atZipMedian.push(datamap.ZipMedian);
+                    }
+                }
+
+                
+
+                if(datamap.white > 0.4){
+                            satEth[3].push(datamap.satWrt + datamap.satMath);
+                        }else if(datamap.hispanic > .5){
+                            satEth[2].push(datamap.satWrt + datamap.satMath);
+                        }else if(datamap.asian > .45){
+                            satEth[0].push(datamap.satWrt + datamap.satMath);
+                        }else if(datamap.black > .5){
+                            satEth[1].push(datamap.satWrt + datamap.satMath);}
+                
+                if(datamap.white > 0.4){
+                        gradEth[3].push(datamap.Graduation);
+                    }else if(datamap.hispanic > .5){
+                        gradEth[2].push(datamap.Graduation);
+                    }else if(datamap.asian > .45){
+                        gradEth[0].push(datamap.Graduation);
+                    }else if(datamap.black > .5){
+                        gradEth[1].push(datamap.Graduation);}
+
+                
+                
+                datamap.Graduation = Number(datamap.Graduation);
+                datamap.attendance = Number(datamap.attendance);
+                datamap.CollegeSat = Number(datamap.CollegeSat);
+            });
+
+            console.log(gradListBorough);
+            console.log(satEth);
+
+            console.log(zipIncome);
+            console.log(data[2]);
+            console.log(data[100]);
+            console.log(data[300]);
+            console.log(Boro);
+            console.log(BoroN);
+
+            
+
+
+            console.log(data['zipMedian']);
+            dataCopy = [];
+            dataCopy = data;
+
+            console.log(dataCopy);
+
+            const mylist = [];
+            for(var i=0;i<dataCopy.length;i++){
+                mylist.push(dataCopy[i].zipMedian)
+            }
+
+            console.log(mylist);
+
+            var keyNames = Object.keys(dataCopy[0]);
+
+            const headers = keyNames;
+
+            // const ObjectsToCsv = require('objects-to-csv');
+
+
+            // (async () => {
+            //     const csv = new ObjectsToCsv(dataCopy);
+                
+            //     // Save to file:
+            //     await csv.toDisk('./test.csv');
+                
+            //     // Return the CSV file as string:
+            //     console.log(await csv.toString());
+            //     })();
+            
+            console.log(keyNames);
+
+
+
+            var boroAPPercntage = [];
+            var SATPercentage = [];
+
+            for(var i=0;i<5;i++){
+                boroAPPercntage.push(((Boro[i] / BoroN[i])*100).toPrecision(2))
+            }
+            for(var i=0;i<5;i++){
+                SATPercentage.push(((Boro2[i] / BoroN[i])*100).toPrecision(2))
+            }
+
+            console.log(boroAPPercntage);
+
+            //make list of objects from data
+
+            apscores = [];
+            satScores = [];
+
+            gradRate = [];
+
+            for(var i=0;i<boroAPPercntage.length;i++){
+                apscores.push(
+                    {
+                        borough: boroName[i],
+                        numberAP: boroAPPercntage[i]
+                    }
+                );
+            }
+
+            for(var i=0;i<SATPercentage.length;i++){
+                satScores.push(
+                    {
+                        borough: boroName[i],
+                        value: SATPercentage[i]
+                    }
+                );
+            }
+
+            console.log(gradListBorough[0]);
+            console.log(getAverage(gradListBorough[0]));
+
+            console.log();
+
+            for(var i=0;i<5;i++){
+                gradRate.push(
+                    {
+                        borough: boroName[i],
+                        value: getAverage(gradListBorough[i]) * 100
+                    }
+                );
+            }
+        
+            console.log(gradRate);
+            console.log(apscores);
+
+            ethName = ["Asian", "Black", "Hispanic", "White", "other"]
+            ethnicityAll = [0,0,0,0,0];
+            gradSchoolAll = [0, 0, 0, 0, 0];
+            ethSchoolSAT = [0,0,0,0,0];
+            console.log(ethnicityAll);
+
+            data.map(function(datamap){
+                ethnicityAll[0] += datamap.enrollment * datamap.asian;
+                ethnicityAll[1] += datamap.enrollment * datamap.black;
+                ethnicityAll[2] += datamap.enrollment * datamap.hispanic;
+                ethnicityAll[3] += datamap.enrollment * datamap.white;
+                ethnicityAll[4] += (datamap.enrollment * datamap.native) + (datamap.enrollment * datamap.pacific);
+            });
+
+            data.map(function(datamap){
+
+                if(datamap.borough == "Manhattan" && Number(datamap.Graduation) >= .95 ){
+                    gradSchoolAll[0] += 1;
+                }else if(datamap.borough == "Bronx" && Number(datamap.Graduation) >= .95){
+                    gradSchoolAll[1] += 1;
+                }else if(datamap.borough == "Brooklyn" && Number(datamap.Graduation) >= .95){
+                    gradSchoolAll[2] += 1;
+                }else if(datamap.borough == "Queens" && Number(datamap.Graduation) >= .95){
+                    gradSchoolAll[3] += 1;
+                }else if(datamap.borough == "StatenIsland" && Number(datamap.Graduation) >= .95){
+                    gradSchoolAll[4] += 1;
+                }
+            });
+
+            ethnicity = [];
+            for(var i=0;i<ethnicityAll.length;i++){
+                ethnicity.push(
+                    {
+                        eth: ethName[i],
+                        amt: Math.floor(ethnicityAll[i])
+                    }
+                );
+            }
+            
+            console.log(ethnicity);
+
+
+        });
+
+        // function b11(){
+
+        //     //var pie = d3.pie()
+        //     console.log(gradSchoolAll);
+        //     //console.log(pie(ethnicityAll));
+
+        //     //example pie
+
+        //     var svg = d3.select("#pie2"),
+        //         width = svg.attr("width"),
+        //         height = svg.attr("height"),
+        //         radius = Math.min(width, height) / 3,
+        //         g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+            
+        //     svg.append("text")
+        //     .attr("transform", "translate(20,0)")
+        //     .attr("x",100)
+        //     .attr("y", 20)
+        //     .attr("font-size", "24px")
+        //     .text("Boroughs with most schools over 95% Grad");
+            
+        //     var color = d3.scaleOrdinal(['#4daf4a','#377eb8','#ff7f00','#984ea3','#e41a1c']);
+
+        //     var path = d3.arc().outerRadius(radius-10).innerRadius(0);
+
+        //     var label = d3.arc().outerRadius(radius + 10).innerRadius(radius + 50);
+
+        //     var pie = d3.pie();
+
+        //     var arc = g.selectAll(".arc")
+        //                .data(pie(gradSchoolAll))
+        //                .enter().append("g")
+        //                .attr("class", "arc");
+
+        //     arc.append("path").data(pie(gradSchoolAll))
+        //        .attr("fill", function(d, i) { return color(i); }).attr("d", path)
+        //        .on('mouseover', function(d, i){d3.select(this).transition().duration('50').attr('opacity', '.85')})
+        //        .on('mouseout', function(d, i){d3.select(this).transition().duration('50').attr('opacity', '1')});
+        //     //arc.append("text").attr("transform")
+        //     arc.append("text")
+        //         .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")"; })
+        //         .attr("dy", "1.2em").data(boroName).attr("dx", "-2em")
+        //         .text(function(d) { return d; });
+
+           
+        // }
+
+        // function b6(){
+        //     console.log(gradEth);
+        //     alert("Avg Graduation Rate by ethnicity: \nWhite: " + getAverage(gradEth[3]) + "\nAsian:" + getAverage(gradEth[0]) + "\nHispanic: " + getAverage(gradEth[2]) + "\nBlack: " + getAverage(gradEth[1]));
+        // }
+
+        
+        </script>
+
+<script>
+
+  // set the dimensions and margins of the graph
+  var margin = {top: 30, right: 10, bottom: 10, left: 0},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+  
+  // append the svg object to the body of the page
+  var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+  
+  // Parse the Data
+
+
+
+  let xe = 1;
+  let ye = 1;
+  
+  function house(){
+    xe++;
+
+    if(xe % 2 == 0){
+      houseLayer.style("display", "block");
+    }else{
+      houseLayer.style("display", "none");
+    }
+    
+  }
+        
+  function dists(){
+    ye++;
+    if(ye % 2 == 0){
+      districtLayer.style("display", "block");
+    }else{
+      districtLayer.style("display", "none");
+    }
+  }
+  </script>
+  </body>
+</html>
+
