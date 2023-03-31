@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+
+        #sidenav a {
+            display: none;
+            position: fixed;
+            left: -50px;
+            transition: 0.3s;
+            padding: 15px;
+            width: 100px;
+            text-decoration: none;
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0);
+            border-radius: 0 5px 5px 0;
+        }
+
+        #sidenav a:hover{
+            color: rgba(255, 255, 255, 1);
+            left: 0;
+        }
+
+        #sat{
+            top: 140px;
+            background-color: #04AA6D;
+        }
+
+        #grad{
+            top: 200px;
+            background-color: #04AA6D;
+        }
+
+        body{
+            background-color: #979a9791;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+        }
+        #content{
+            align-content: center;
+            width: 800px;
+            margin: auto;
+            background-color: #ebf0eb;
+            border-radius: 5px;
+            box-shadow: 2px 3px 7px 2px rgba(0, 0, 0, 0.337);
+            padding: 20px 30px;
+        }
+        .bar{
+            /* fill: steelblue; */
+            display: block;
+        }
+
+        .stuff{
+            display: none;
+        }
+
+        .bar:hover{
+            fill:red;
+        }
+        .dropbtn {
+            
+            left: -80px;
+            top: 50%;
+            transition: 0.3s;
+            border-radius: 0 5px 5px 0;
+            position: fixed;
+            background-color: #4CAF50;
+            color: white;
+            padding: 16px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .dropbtn:hover{
+            left: 0px;
+        }
+
+        .dropdown {
+            top: 50%;
+            position: fixed;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: fixed;
+            left: 100px;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content:hover {
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #eeebeb;
+            margin: 30;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown:hover .dropbtn {
+            background-color: #3e8e41;
+        }
+
+        .sp{
+            display:none;
+        }
+        #pie{
+            display:block;
+        }
+        #pie2{
+            display:block;
+        }
+
+        #scatter1{
+            display:block;
+        }
+
+        #scatter2{
+            display: block;
+        }
+        #scatter3{
+            display:block;
+        }
+
+        #scatter4{
+            display: block;
+        }
+
+        #one{
+            display:block;
+        }
+        #two{
+            display:block;
+        }
+        #three{
+            display:block;
+        }
+        #four{
+            display:block;
+        }
+    </style>
+    <!-- <script type="text/javascript" src="d3/d3.js"></script> -->
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div class="dropdown">
+        <button class="dropbtn">Dropdown</button>
+        <div class="dropdown-content">
+        <a href="#" onclick="superb()">SAT scores</a>
+        <a href="#" onclick="superb2()">Graduation</a>
+        <a href="index2.html" onclick="">Second Index - USE THIS BARCHART</a>
+        <a href="correlation.html" onclick="">CorrMatrix</a>
+        <a href="scatter2.html" onclick="">Scatterplots</a>
+        <a href="PCP.html" onclick="">Parallel Coordinates</a>
+        <a href="pca.html" onclick="">PCA plot</a>
+        <a href="biplot.html" onclick="">biplot</a>
+        <a href="mds.html" onclick="">MDS</a>
+        <a href="mdsattributes.html" onclick="">MDS (attr)</a>
+        <a href="kmeans.html" onclick="">kmeans clustering</a>
+        </div>
+      </div>
+
+    <div id="sidenav">
+        <a id = "sat" href="" onclick="superb()">SAT</a>
+        <a id = "grad" href="" onclick="superb2()">Graduation</a>
+    </div>
+
+    <div id="content">
+    <!-- <button onclick="getAPGraph()">Graph!</button> -->
+ 
+      
+
+    <p id="test"></p>
+    <div><svg id="bar" width="600" height="500"></svg></div>
+
+    <div><svg id="pie" onclick="b5()" width="600" height="500"></svg></div>
+    <div><svg id="pie2" onclick="b6()" width="600" height="500"></svg></div>
+
+    <!-- <div id="scatter"></div> -->
+    <svg id="scatter1" width="650" height="400">
+    </svg>
+    <svg id="scatter2" width="650" height="400">
+    </svg>
+    <svg id="scatter3" width="800" height="400">
+    </svg>
+    <svg id="scatter4" width="800" height="400">
+    </svg>
+
+    <div id="stuff">
+        <svg id="legend" height="100" width="450"> </svg>
+        
+        <div class="sp" id="one">
+        <label for="">Y</label>
+        <select name="" id="">
+            
+            <option value="">SAT score</option>
+        </select>
+        </div>
+        <div class="sp" id="two">
+        <label for="">X</label>
+        <button onclick="b3()">Median Income</button>
+        <button onclick="b4()">AP scores</button>
+        </div>
+
+        <div class="sp2" id="three">
+            <label for="">Y</label>
+            <select name="" id="">
+                
+                <option value="">Graduation</option>
+            </select>
+            </div>
+            <div class="sp2" id="four">
+            <label for="">X</label>
+            <button onclick="b9()">Attendance</button>
+            <button onclick="b10()">College Ready SAT score</button>
+            </div>
+    
+    </div>
+    </div>
+
+    <!-- <div class="dropdown">
+        <button class="dropbtn">Dropdown</button>
+        <div class="dropdown-content">
+        <a href="#" onclick="b1()">Link 1</a>
+        <a href="#" onclick="b2()">Link 2</a>
+        <a href="#" onclick = "b3()">Link 3</a>
+        </div>
+    </div> -->
+    <script >
+    var ethnicity;
+    var zipIncome;
+    var dataCopy;
+    var sathEth;
+    var gradEth;
+    var gradListBorough;
+    var boroName;
+    var atZipMedian;
+    
+        function getAverage(arr){
+            let sum = 0;
+            for(var i=0;i<arr.length;i++){
+                sum += Number(arr[i]);
+            }
+            return (sum / arr.length).toPrecision(3);
+        }
+        d3.csv("ZipIncome.csv", function(error, data){
+            if(error){
+                throw error;
+            }
+
+
+            zipIncome=[];
+            data.map(function(datamap){
+                zipIncome.push({
+                    zipCode: datamap.Fips,
+                    zipAmt: Math.floor(datamap.Amount)
+                });
+            });
+
+            //console.log(zipIncome);
+        });
+        d3.csv("HSData.csv", function(error, data) {
+            if (error){
+                throw error;
+            }
+            const dbnKeys = new Map([
+                ["K","Brooklyn"],
+                ["X","Bronx"],
+                ["Q","Queens"],
+                ["M","Manhattan"],
+                ["R","StatenIsland"]
+            ])
+
+
+            function boroAP(b, arr){
+                if(b == "Manhattan"){
+                    arr[0] += 1;
+                }else if(b == "Bronx"){
+                    arr[1] += 1;
+                }else if(b == "Brooklyn"){
+                    arr[2] += 1;
+                }else if(b == "Queens"){
+                    arr[3] += 1;
+                }else if(b == "StatenIsland"){
+                    arr[4] += 1;
+                }
+            }
+
+            boroName = ["Manhattan", "Bronx", "Brooklyn","Queens","StatenIsland"];
+            var Boro = [0, 0, 0, 0, 0];
+            var Boro2 = [0, 0, 0, 0, 0];
+
+            var BoroN = [0, 0, 0, 0, 0];
+
+            var score = [800,1057, 1100, 1200, 1300];
+
+            gradListBorough = [[],[],[],[],[]];
+
+            satEth = [[],[],[],[]];
+            gradEth = [[],[],[],[]];
+            atZipMedian = [];
+
+            var numberBoro = [0,0,0,0,0];
+            var studCount = [0,0,0,0,0];
+
+            var man = 0;
+
+            data.map(function(datamap){
+                datamap.borough = dbnKeys.get(datamap.dbn.charAt(2));
+                if(datamap.borough == "Manhattan" && datamap.APScoreQualified >= .5){
+                    Boro[0] += 1;
+                }else if(datamap.borough == "Bronx" && datamap.APScoreQualified >= .5){
+                    Boro[1] += 1;
+                }else if(datamap.borough == "Brooklyn" && datamap.APScoreQualified >= .5){
+                    Boro[2] += 1;
+                }else if(datamap.borough == "Queens" && datamap.APScoreQualified >= .5){
+                    Boro[3] += 1;
+                }else if(datamap.borough == "StatenIsland" && datamap.APScoreQualified >= .5){
+                    Boro[4] += 1;
+                }
+
+                datamap.satMath = Number(datamap.satMath);
+                datamap.satWrt = Number(datamap.satWrt);
+
+                if(datamap.borough == "Manhattan" && (datamap.satMath + datamap.satWrt) >= score[1]){
+                    Boro2[0] += 1;
+                }else if(datamap.borough == "Bronx" && (datamap.satMath + datamap.satWrt) >= score[1]){
+                    Boro2[1] += 1;
+                }else if(datamap.borough == "Brooklyn" && (datamap.satMath + datamap.satWrt) >= score[1]){
+                    Boro2[2] += 1;
+                }else if(datamap.borough == "Queens" && (datamap.satMath + datamap.satWrt) >= score[1]){
+                    Boro2[3] += 1;
+                }else if(datamap.borough == "StatenIsland" && (datamap.satMath + datamap.satWrt) >= score[1]){
+                    Boro2[4] += 1;
+                }
+
+                if(datamap.borough == "Manhattan" ){
+                    gradListBorough[0].push(Number(datamap.Graduation));
+                    numberBoro[0]++;
+                }else if(datamap.borough == "Bronx" ){
+                    gradListBorough[1].push(Number(datamap.Graduation));
+                    numberBoro[0]++;
+                }else if(datamap.borough == "Brooklyn" ){
+                    gradListBorough[2].push(Number(datamap.Graduation));
+                    numberBoro[0]++;
+                }else if(datamap.borough == "Queens" ){
+                    gradListBorough[3].push(Number(datamap.Graduation));
+                    numberBoro[0]++;
+                }else if(datamap.borough == "StatenIsland" ){
+                    gradListBorough[4].push(Number(datamap.Graduation));
+                    numberBoro[0]++;
+                }
+
+                if(datamap.borough == "Manhattan"){
+                    BoroN[0] += 1;
+                    studCount[0] += Number(datamap.enrollment);
+                }else if(datamap.borough == "Bronx" ){
+                    BoroN[1] += 1;
+                    studCount[1] += Number(datamap.enrollment);
+                }else if(datamap.borough == "Brooklyn" ){
+                    BoroN[2] += 1;
+                    studCount[2] += Number(datamap.enrollment);
+                }else if(datamap.borough == "Queens" ){
+                    BoroN[3] += 1;
+                    studCount[3] += Number(datamap.enrollment);
+                }else if(datamap.borough == "StatenIsland"){
+                    BoroN[4] += 1;
+                    studCount[4] += Number(datamap.enrollment);
+                }
+                datamap.zip = datamap.address.slice(-5);
+                datamap.zipMedian = 0;
+                for (var i=0;i<181;i++){
+                    if(datamap.zip == String(zipIncome[i].zipCode)){
+                        datamap.zipMedian = zipIncome[i].zipAmt;
+                        atZipMedian.push(datamap.ZipMedian);
+                    }
+                }
+
+                
+
+                if(datamap.white > 0.4){
+                            satEth[3].push(datamap.satWrt + datamap.satMath);
+                        }else if(datamap.hispanic > .5){
+                            satEth[2].push(datamap.satWrt + datamap.satMath);
+                        }else if(datamap.asian > .45){
+                            satEth[0].push(datamap.satWrt + datamap.satMath);
+                        }else if(datamap.black > .5){
+                            satEth[1].push(datamap.satWrt + datamap.satMath);}
+                
+                if(datamap.white > 0.4){
+                        gradEth[3].push(datamap.Graduation);
+                    }else if(datamap.hispanic > .5){
+                        gradEth[2].push(datamap.Graduation);
+                    }else if(datamap.asian > .45){
+                        gradEth[0].push(datamap.Graduation);
+                    }else if(datamap.black > .5){
+                        gradEth[1].push(datamap.Graduation);}
+
+                
+                
+                datamap.Graduation = Number(datamap.Graduation);
+                datamap.attendance = Number(datamap.attendance);
+                datamap.CollegeSat = Number(datamap.CollegeSat);
+            });
+
+            console.log(gradListBorough);
+            console.log(satEth);
+
+            console.log(zipIncome);
+            console.log(data[2]);
+            console.log(data[100]);
+            console.log(data[300]);
+            console.log(Boro);
+            console.log(BoroN);
+            console.log(studCount);
+
+            
+
+
+            console.log(data['zipMedian']);
+            dataCopy = [];
+            dataCopy = data;
+
+            console.log(dataCopy);
+
+            const mylist = [];
+            for(var i=0;i<dataCopy.length;i++){
+                mylist.push(dataCopy[i].zipMedian)
+            }
+
+            console.log(mylist);
+
+            var keyNames = Object.keys(dataCopy[0]);
+
+            const headers = keyNames;
+
+            // const ObjectsToCsv = require('objects-to-csv');
+
+
+            // (async () => {
+            //     const csv = new ObjectsToCsv(dataCopy);
+                
+            //     // Save to file:
+            //     await csv.toDisk('./test.csv');
+                
+            //     // Return the CSV file as string:
+            //     console.log(await csv.toString());
+            //     })();
+            
+            console.log(keyNames);
+
+
+
+            var boroAPPercntage = [];
+            var SATPercentage = [];
+
+            for(var i=0;i<5;i++){
+                boroAPPercntage.push(((Boro[i] / BoroN[i])*100).toPrecision(2))
+            }
+            for(var i=0;i<5;i++){
+                SATPercentage.push(((Boro2[i] / BoroN[i])*100).toPrecision(2))
+            }
+
+            console.log(boroAPPercntage);
+
+            //make list of objects from data
+
+            apscores = [];
+            satScores = [];
+
+            gradRate = [];
+
+            for(var i=0;i<boroAPPercntage.length;i++){
+                apscores.push(
+                    {
+                        borough: boroName[i],
+                        numberAP: boroAPPercntage[i]
+                    }
+                );
+            }
+
+            for(var i=0;i<SATPercentage.length;i++){
+                satScores.push(
+                    {
+                        borough: boroName[i],
+                        value: SATPercentage[i]
+                    }
+                );
+            }
+
+            console.log(gradListBorough[0]);
+            console.log(getAverage(gradListBorough[0]));
+
+            console.log();
+
+            for(var i=0;i<5;i++){
+                gradRate.push(
+                    {
+                        borough: boroName[i],
+                        value: getAverage(gradListBorough[i]) * 100
+                    }
+                );
+            }
+        
+            console.log(gradRate);
+            console.log(apscores);
+
+            ethName = ["Asian", "Black", "Hispanic", "White", "other"]
+            ethnicityAll = [0,0,0,0,0];
+            gradSchoolAll = [0, 0, 0, 0, 0];
+            ethSchoolSAT = [0,0,0,0,0];
+            console.log(ethnicityAll);
+
+            data.map(function(datamap){
+                ethnicityAll[0] += datamap.enrollment * datamap.asian;
+                ethnicityAll[1] += datamap.enrollment * datamap.black;
+                ethnicityAll[2] += datamap.enrollment * datamap.hispanic;
+                ethnicityAll[3] += datamap.enrollment * datamap.white;
+                ethnicityAll[4] += (datamap.enrollment * datamap.native) + (datamap.enrollment * datamap.pacific);
+            });
+
+            data.map(function(datamap){
+
+                if(datamap.borough == "Manhattan" && Number(datamap.Graduation) >= .95 ){
+                    gradSchoolAll[0] += 1;
+                }else if(datamap.borough == "Bronx" && Number(datamap.Graduation) >= .95){
+                    gradSchoolAll[1] += 1;
+                }else if(datamap.borough == "Brooklyn" && Number(datamap.Graduation) >= .95){
+                    gradSchoolAll[2] += 1;
+                }else if(datamap.borough == "Queens" && Number(datamap.Graduation) >= .95){
+                    gradSchoolAll[3] += 1;
+                }else if(datamap.borough == "StatenIsland" && Number(datamap.Graduation) >= .95){
+                    gradSchoolAll[4] += 1;
+                }
+            });
+
+            ethnicity = [];
+            for(var i=0;i<ethnicityAll.length;i++){
+                ethnicity.push(
+                    {
+                        eth: ethName[i],
+                        amt: Math.floor(ethnicityAll[i])
+                    }
+                );
+            }
+            
+            console.log(ethnicity);
+
+
+        });
+        
+        
+        function b1(opt, opt2){
+
+            const color_arr = ["#de382c", "#ff7f00", "#4daf4a", "#377eb8", "#984ea3"];
+
+            var e1 = 50;
+            var e2 = 0;
+
+            if(opt2 == "x"){
+                e1 = 50;
+            }else{
+                e1= 100;
+                e2 = 75;
+            }
+
+            console.log(satScores);
+            console.log(gradRate);
+
+            var svg = d3.select("#bar"),
+                margin = 200,
+                width = svg.attr("width") - margin,
+                height = svg.attr("height") - margin;
+                
+            
+            
+            var xScale = d3.scaleBand().range([0,width]).padding(0.4);
+            yScale = d3.scaleLinear().range([height, 0]);
+
+
+
+            xScale.domain(satScores.map(function(d) { return d.borough; }));
+            yScale.domain([e2, e1]);
+
+            
+
+
+            localStorage.setItem('Manhattan', color_arr[0]);
+            localStorage.setItem('Bronx', color_arr[1]);
+            localStorage.setItem('Brooklyn', color_arr[2]);
+            localStorage.setItem('Queens', color_arr[3]);
+            localStorage.setItem('StatenIsland', color_arr[4]);
+
+            // localStorage.set("On_1", '1');
+            // localStorage.set("On_1", '1');
+            // localStorage.set("On_1", '1');
+            // localStorage.set("On_1", '1');
+            // localStorage.set("On_1", '1');
+            // localStorage.set("On_1", '1');
+            
+
+            
+            d3.select(".heading").remove();
+            svg.append("text").attr("class", "heading")
+                .attr("transform", "translate(20,0)")
+                .attr("x",50)
+                .attr("y", 50)
+                .attr("font-size", "24px")
+                .text("Percentage of Schools with SAT score over avg");
+            
+
+
+            d3.selectAll(".yscale").remove();
+            var g = svg.append("g")
+            .attr("transform", "translate(" + 100 + "," + 100 + ")");
+            g.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(xScale));
+        
+            g.append("g")
+                .call(d3.axisLeft(yScale).tickFormat(function(d){
+                    return d + "%";
+                }).ticks(10)).attr("class", "yscale").transition().duration(2000);
+
+            //opt1 opt2
+            //data satScores d.numberSat
+            //data gradRate d.graduate
+
+            g.selectAll(".bar")
+                    .data(opt)
+                    .enter().append("rect").transition().duration(2000)
+                    .attr("class", "bar")
+                    .attr("x", function(d) { return xScale(d.borough); })
+                    .attr("y", function(d) { return yScale(d.value); })
+                    .attr("width", xScale.bandwidth())
+                    .attr("height", function(d) { return height - yScale(d.value); })
+                    .attr("fill", function (d){
+                        if(d.borough == "Manhattan"){
+                            return "steelblue";
+                        }else{
+                            return "steelblue";
+                        }
+                    })
+            
+            
+            d3.selectAll(".bar").remove();
+            //d3.selectAll(".heading").remove();
+            xScale = 0;
+            yScale = 0;
+
+        }
+        console.log(ethnicity);
+        function b2(){
+            document.getElementById("pie").style.display = "block";
+            document.getElementById("pie2").style.display = "none";
+
+            //var pie = d3.pie()
+            console.log(ethnicity);
+            //console.log(pie(ethnicityAll));
+
+            //example pie
+
+            var svg = d3.select("#pie"),
+                width = svg.attr("width"),
+                height = svg.attr("height"),
+                radius = Math.min(width, height) / 3,
+                g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+            
+            svg.append("text")
+            .attr("transform", "translate(20,0)")
+            .attr("x",170)
+            .attr("y", 20)
+            .attr("font-size", "24px")
+            .text("Ethnicity: All Boroughs");
+            
+            var color = d3.scaleOrdinal(['#4daf4a','#377eb8','#ff7f00','#984ea3','#e41a1c']);
+
+            var path = d3.arc().outerRadius(radius-10).innerRadius(0);
+
+            var label = d3.arc().outerRadius(radius + 10).innerRadius(radius + 50);
+
+            var pie = d3.pie();
+
+            var arc = g.selectAll(".arc")
+                       .data(pie(ethnicityAll))
+                       .enter().append("g")
+                       .attr("class", "arc");
+
+            arc.append("path").data(pie(ethnicityAll))
+               .attr("fill", function(d, i) { return color(i); }).attr("d", path)
+               .on('mouseover', function(d, i){d3.select(this).transition().duration('50').attr('opacity', '.85')})
+               .on('mouseout', function(d, i){d3.select(this).transition().duration('50').attr('opacity', '1')});
+            //arc.append("text").attr("transform")
+            arc.append("text")
+                .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")"; })
+                .attr("dy", "0.35em").data(ethName)
+                .text(function(d) { return d; });
+
+            // //generate arcs
+            // var arc = d3.arc().innerRadius(0).outerRadius(radius);
+
+            // //generate groups
+            // var arcs = g.selectAll("arc").data(pie(ethnicityAll)).enter().append("g").attr("class", "arc")
+
+            // //draw arc paths
+            // arcs.append("path").attr("fill", function(d, i){
+            //     return color(i);
+            // }).attr("d", arc);
+
+            // arc.append("text").data(ethnicityAll).attr("transform", function(d){
+            //     return "translate(" + label.centroid(d) + ")";
+            // }).text(function(d){return d.})
+
+
+        }
+
+        function b11(){
+            document.getElementById("pie").style.display = "none";
+            document.getElementById("pie2").style.display = "block";
+
+            //var pie = d3.pie()
+            console.log(gradSchoolAll);
+            //console.log(pie(ethnicityAll));
+
+            //example pie
+
+            var svg = d3.select("#pie2"),
+                width = svg.attr("width"),
+                height = svg.attr("height"),
+                radius = Math.min(width, height) / 3,
+                g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+            
+            svg.append("text")
+            .attr("transform", "translate(20,0)")
+            .attr("x",100)
+            .attr("y", 20)
+            .attr("font-size", "24px")
+            .text("Boroughs with most schools over 95% Grad");
+            
+            var color = d3.scaleOrdinal(['#4daf4a','#377eb8','#ff7f00','#984ea3','#e41a1c']);
+
+            var path = d3.arc().outerRadius(radius-10).innerRadius(0);
+
+            var label = d3.arc().outerRadius(radius + 10).innerRadius(radius + 50);
+
+            var pie = d3.pie();
+
+            var arc = g.selectAll(".arc")
+                       .data(pie(gradSchoolAll))
+                       .enter().append("g")
+                       .attr("class", "arc");
+
+            arc.append("path").data(pie(gradSchoolAll))
+               .attr("fill", function(d, i) { return color(i); }).attr("d", path)
+               .on('mouseover', function(d, i){d3.select(this).transition().duration('50').attr('opacity', '.85')})
+               .on('mouseout', function(d, i){d3.select(this).transition().duration('50').attr('opacity', '1')});
+            //arc.append("text").attr("transform")
+            arc.append("text")
+                .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")"; })
+                .attr("dy", "1.2em").data(boroName).attr("dx", "-2em")
+                .text(function(d) { return d; });
+
+           
+        }
+
+       
+        function b3(){
+            document.getElementById("scatter2").style.display = "none";
+            document.getElementById("scatter1").style.display = "block";
+            document.getElementById("scatter3").style.display = "none";
+            document.getElementById("scatter4").style.display = "none";
+            document.getElementById("one").style.display = "block";
+            document.getElementById("two").style.display = "block";
+
+            document.getElementById("three").style.display = "none";
+            document.getElementById("four").style.display = "none";
+
+            var e = document.getElementsByClassName("sp");
+            for(var i=0;i<e.length;i++){
+                e[i].style.display = "block";
+            }
+
+            var margin = {top: 10, right: 30, bottom: 30, left: 60},
+            width = 600 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
+
+            var svg = d3.select("#scatter1")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+
+                svg.append("text")
+                    .attr("transform", "translate(20,0)")
+                    .attr("x",170)
+                    .attr("y", 5)
+                    .attr("font-size", "20px")
+                    .text("SAT score vs Median Income");
+                
+                svg.append("text")
+                .attr("transform", "rotate(45deg)")
+                .attr("x","-60")
+                .attr("y", "40%")
+                .attr("font-size", "12px")
+                .text("SAT");
+
+                svg.append("text")
+                .attr("transform", "rotate(45deg)")
+                .attr("x","40%")
+                .attr("y", "97.2%")
+                .attr("font-size", "10px")
+                .text("Median Income");
+                
+                    var x=d3.scaleLinear()
+                        .domain([20000, 280000])
+                        .range([0, width + 75]);
+                    svg.append("g")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(d3.axisBottom(x))
+                    
+
+
+                    var y=d3.scaleLinear()
+                        .domain([400, 1600])
+                        .range([height, 0]);
+                    svg.append("g")
+                        .call(d3.axisLeft(y));
+
+                        
+                    svg.append("g")
+                        .selectAll("dot")
+                        .data(dataCopy)
+                        .enter()
+                        .append("circle")
+                        .attr("cx", function(d){return x(d.zipMedian);})
+                        .attr("cy", function(d){return y(d.satMath + d.satWrt);})
+                        .attr("r", 1.5)
+                        .attr("fill", function(d){
+
+                    /*
+                    '#4daf4a','#377eb8','#ff7f00','#984ea3','#e41a1c'
+
+
+
+
+
+                    */
+                        if(d.zipMedian == 0){
+                            return "rgba(15, 95, 185, 0)";
+                        }else if(d.hispanic > .6){
+                            
+                            return "#ff7f00";
+                        }else if(d.asian > .45){
+                            
+                            return "#4daf4a";
+                        }else if(d.black > .6){
+                            
+                            return "#377eb8";
+                        }else if(d.white > .4){
+                            
+                            return "#984ea3";
+                        }else{
+                            return "#8f8a49";
+                        }
+                    }).attr("stroke-width", 1.5);
+
+
+                    
+        }
+
+  
+        function b4(){
+            document.getElementById("scatter1").style.display = "none";
+            document.getElementById("scatter2").style.display = "block";
+            document.getElementById("scatter3").style.display = "none";
+            document.getElementById("scatter4").style.display = "none";
+            document.getElementById("one").style.display = "block";
+            document.getElementById("two").style.display = "block";
+
+            document.getElementById("three").style.display = "none";
+            document.getElementById("four").style.display = "none";
+            var margin = {top: 10, right: 30, bottom: 30, left: 60},
+            width = 600 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
+
+            var svg = d3.select("#scatter2")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+
+                svg.append("text")
+                    .attr("transform", "translate(20,0)")
+                    .attr("x",170)
+                    .attr("y", 5)
+                    .attr("font-size", "20px")
+                    .text("SAT score vs % Schools with 3 on AP");
+
+                    svg.append("text")
+                .attr("transform", "rotate(45deg)")
+                .attr("x","-60")
+                .attr("y", "40%")
+                .attr("font-size", "12px")
+                .text("SAT");
+
+                svg.append("text")
+                .attr("transform", "rotate(45deg)")
+                .attr("x","40%")
+                .attr("y", "97.2%")
+                .attr("font-size", "10px")
+                .text("AP Score Percentage");
+            
+            var x=d3.scaleLinear()
+                        .domain([0, 100])
+                        .range([0, width + 75]);
+                    svg.append("g")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(d3.axisBottom(x));
+                    
+                    var y=d3.scaleLinear()
+                        .domain([400, 1600])
+                        .range([height, 0]);
+                    svg.append("g")
+                        .call(d3.axisLeft(y));
+
+                    
+                    svg.append("g")
+                        .selectAll("dot")
+                        .data(dataCopy)
+                        .enter()
+                        .append("circle")
+                        .attr("cx", function(d){return x(d.APScoreQualified * 100);})
+                        .attr("cy", function(d){return y(d.satMath + d.satWrt);})
+                        .attr("r", 1.5)
+                        .attr("fill", function(d){
+
+                    /*
+                    '#4daf4a','#377eb8','#ff7f00','#984ea3','#e41a1c'
+
+
+
+
+
+                    */
+                        if(d.zipMedian == 0){
+                            return "rgba(15, 95, 185, 0)";
+                        }else if(d.hispanic > .6){
+                            return "#ff7f00";
+                        }else if(d.asian > .45){
+                            return "#4daf4a";
+                        }else if(d.black > .6){
+                            return "#377eb8";
+                        }else if(d.white > .4){
+                            return "#984ea3";
+                        }else{
+                            return "#8f8a49";
+                        }
+                    }).attr("stroke-width", 1.5);
+        }
+        function b9(){
+            console.log(dataCopy[0]);
+            console.log(dataCopy[0].Graduation);
+            console.log(dataCopy[0].attendance);
+            
+            document.getElementById("scatter1").style.display = "none";
+            document.getElementById("scatter2").style.display = "none";
+            document.getElementById("scatter3").style.display = "block";
+            document.getElementById("scatter4").style.display = "none";
+            document.getElementById("one").style.display = "none";
+            document.getElementById("two").style.display = "none";
+
+            document.getElementById("three").style.display = "block";
+            document.getElementById("four").style.display = "block";
+
+
+            var margin = {top: 10, right: 30, bottom: 30, left: 60},
+            width = 800,
+            height = 400 - margin.top - margin.bottom;
+
+            var svg = d3.select("#scatter3")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+
+                svg.append("text")
+                    .attr("transform", "translate(20,0)")
+                    .attr("x",170)
+                    .attr("y", 5)
+                    .attr("font-size", "20px")
+                    .text("Graduation vs Attendance");
+                
+                    svg.append("text")
+                .attr("transform", "rotate(45deg)")
+                .attr("x","-60")
+                .attr("y", "40%")
+                .attr("font-size", "12px")
+                .text("Grad %");
+
+                svg.append("text")
+                .attr("transform", "rotate(45deg)")
+                .attr("x","40%")
+                .attr("y", "97.2%")
+                .attr("font-size", "10px")
+                .text("Attendance %");
+            
+            var x=d3.scaleLinear()
+                        .domain([40, 100])
+                        .range([0, 600]);
+            svg.append("g")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(d3.axisBottom(x));
+                    
+            var y=d3.scaleLinear()
+                .domain([0, 100])
+                .range([height, 0]);
+            svg.append("g")
+                .call(d3.axisLeft(y));
+
+                    
+                    svg.append("g")
+                        .selectAll("dot")
+                        .data(dataCopy)
+                        .enter()
+                        .append("circle")
+                        .attr("cx", function(d){return x(d.Graduation * 100);})
+                        .attr("cy", function(d){return y(d.attendance * 100);})
+                        .attr("r", 1.5)
+                        .attr("fill", function(d){
+
+                    /*
+                    '#4daf4a','#377eb8','#ff7f00','#984ea3','#e41a1c'
+
+
+
+
+
+                    */
+                        if(d.zipMedian == 0){
+                            return "rgba(15, 95, 185, 0)";
+                        }else if(d.hispanic > .6){
+                            return "#ff7f00";
+                        }else if(d.asian > .45){
+                            return "#4daf4a";
+                        }else if(d.black > .6){
+                            return "#377eb8";
+                        }else if(d.white > .4){
+                            return "#984ea3";
+                        }else{
+                            return "#8f8a49";
+                        }
+                    }).attr("stroke-width", 1.5);
+        }
+
+        function b10(){
+            console.log(dataCopy[0]);
+            console.log(dataCopy[0].Graduation);
+            console.log(dataCopy[0].attendance);
+            
+            document.getElementById("scatter1").style.display = "none";
+            document.getElementById("scatter2").style.display = "none";
+            document.getElementById("scatter3").style.display = "none";
+            document.getElementById("scatter4").style.display = "block";
+            document.getElementById("one").style.display = "none";
+            document.getElementById("two").style.display = "none";
+
+            document.getElementById("three").style.display = "block";
+            document.getElementById("four").style.display = "block";
+
+
+            var margin = {top: 10, right: 0, bottom: 30, left: 60},
+            width = 800,
+            height = 400 - margin.top - margin.bottom;
+
+            var svg = d3.select("#scatter4")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+
+                svg.append("text")
+                    .attr("transform", "translate(20,0)")
+                    .attr("x",170)
+                    .attr("y", 5)
+                    .attr("font-size", "20px")
+                    .text("Graduation vs College Ready SAT score");
+                
+                    svg.append("text")
+                .attr("transform", "rotate(45deg)")
+                .attr("x","-60")
+                .attr("y", "40%")
+                .attr("font-size", "12px")
+                .text("Grad %");
+
+                svg.append("text")
+                .attr("transform", "rotate(45deg)")
+                .attr("x","40%")
+                .attr("y", "97.2%")
+                .attr("font-size", "10px")
+                .text("College Ready SAT % ");
+            
+            var x=d3.scaleLinear()
+                        .domain([40, 100])
+                        .range([0, 600]);
+            svg.append("g")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(d3.axisBottom(x));
+                    
+            var y=d3.scaleLinear()
+                .domain([0, 100])
+                .range([height, 0]);
+            svg.append("g")
+                .call(d3.axisLeft(y));
+
+                    
+                    svg.append("g")
+                        .selectAll("dot")
+                        .data(dataCopy)
+                        .enter()
+                        .append("circle")
+                        .attr("cx", function(d){return x(d.Graduation * 100);})
+                        .attr("cy", function(d){return y(d.CollegeSat * 100);})
+                        .attr("r", 1.5)
+                        .attr("fill", function(d){
+
+                    /*
+                    '#4daf4a','#377eb8','#ff7f00','#984ea3','#e41a1c'
+
+
+
+
+
+                    */
+                        if(d.zipMedian == 0){
+                            return "rgba(15, 95, 185, 0)";
+                        }else if(d.hispanic > .6){
+                            return "#ff7f00";
+                        }else if(d.asian > .45){
+                            return "#4daf4a";
+                        }else if(d.black > .6){
+                            return "#377eb8";
+                        }else if(d.white > .4){
+                            return "#984ea3";
+                        }else{
+                            return "#8f8a49";
+                        }
+                    }).attr("stroke-width", 1.5);
+        }
+
+        function b20(){
+            var svg = d3.select("#legend");
+
+            svg.append("text")
+            .attr("transform", "translate(50,20)")
+            .attr("x",2)
+            .attr("y", 10)
+            .attr("font-size", "12px")
+            .text("Majority Ethnicity School").attr("font-weight", "bold");
+
+            svg.append("circle").attr("cx",50).attr("cy", 50).attr("r", 6)
+                .style("fill", "#984ea3");
+            
+            svg.append("text").attr("x", 70).attr("y", 50).text("White")
+            .style("font-size", "10px").attr("alignment-baseline", "middle");
+
+            svg.append("circle").attr("cx",50).attr("cy", 70).attr("r", 6)
+                .style("fill", "#377eb8");
+
+            svg.append("text").attr("x", 70).attr("y", 70).text("Black")
+                .style("font-size", "10px").attr("alignment-baseline", "middle");
+
+
+
+            svg.append("circle").attr("cx",140).attr("cy", 50).attr("r", 6)
+                .style("fill", "#4daf4a");
+
+                
+            svg.append("text").attr("x", 160).attr("y", 50).text("Asian")
+                .style("font-size", "10px").attr("alignment-baseline", "middle");
+
+
+            svg.append("circle").attr("cx",140).attr("cy", 70).attr("r", 6)
+                .style("fill", "#ff7f00");
+
+            svg.append("text").attr("x", 160).attr("y", 70).text("Hispanic")
+                .style("font-size", "10px").attr("alignment-baseline", "middle");
+
+            svg.append("circle").attr("cx",50).attr("cy", 90).attr("r", 6)
+                .style("fill", "#8f8a49");
+            
+            svg.append("text").attr("x", 70).attr("y", 90).text("No Majority")
+            .style("font-size", "10px").attr("alignment-baseline", "middle");
+
+        }
+
+        function b5(){
+
+                console.log(satEth);
+                
+                alert("Avg SAT score by ethnicity majority school: \nWhite: " + getAverage(satEth[3]) + "\nAsian:" + getAverage(satEth[0]) + "\nHispanic: " + getAverage(satEth[2]) + "\nBlack: " + getAverage(satEth[1]));
+            }
+        
+        function b6(){
+            console.log(gradEth);
+            alert("Avg Graduation Rate by ethnicity: \nWhite: " + getAverage(gradEth[3]) + "\nAsian:" + getAverage(gradEth[0]) + "\nHispanic: " + getAverage(gradEth[2]) + "\nBlack: " + getAverage(gradEth[1]));
+        }
+
+
+        function superb(){
+            b1(satScores, "x");
+            b2();
+            b3();
+            b4();
+            document.getElementById("stuff").style.display = "block";
+        }
+
+        function superb2(){
+            b1(gradRate, "y");
+            b9();
+            b10();
+            b11();
+            document.getElementById("stuff").style.display = "block";
+        }
+
+        b20();
+
+        
+        const mybars = document.getElementsByClassName("bar");
+        console.log(mybars);
+        console.log(mybars[0]);
+
+        // mybars[0].onclick = function(event){
+        //     mybars[0].style.fill="yellow";
+        // }
+        
+
+
+    </script>
+</body>
+</html>

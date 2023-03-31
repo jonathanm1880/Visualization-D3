@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <title>Document</title>
+    <style>
+
+    </style>
+</head>
+<body>
+    <div><svg id="scatter1" width="650" height="400"></svg>></div>
+
+<script>
+        var margin = {top: 10, right: 30, bottom: 30, left: 60},
+            width = 600 - margin.left - margin.right,
+            height = 340 - margin.top - margin.bottom;
+
+            var svg = d3.select("#scatter1")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+
+                svg.append("text")
+                    .attr("transform", "translate(20,0)")
+                    .attr("x",170)
+                    .attr("y", 5)
+                    .attr("font-size", "20px")
+                    .text("MDS Attributes");
+                
+                svg.append("text")
+                .attr("transform", "rotate(45deg)")
+                .attr("x","-60")
+                .attr("y", "40%")
+                .attr("font-size", "12px")
+                .text("Y");
+
+                svg.append("text")
+                .attr("transform", "rotate(45deg)")
+                .attr("x","40%")
+                .attr("y", "97.2%")
+                .attr("font-size", "10px")
+                .text("X");
+    
+        d3.csv("out3attributes.csv", function(error, data) {
+        if (error) {
+            throw error;
+        }
+
+        var x=d3.scaleLinear()
+                        .domain([-2, 2])
+                        .range([0, width + 75]);
+                    svg.append("g")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(d3.axisBottom(x))
+                    
+
+
+                    var y=d3.scaleLinear()
+                        .domain([-2, 2])
+                        .range([height, 0]);
+                    svg.append("g")
+                        .call(d3.axisLeft(y));
+                
+
+                    svg.append("g")
+                        .selectAll("dot")
+                        .data(data)
+                        .enter()
+                        .append("circle")
+                        .attr("cx", function(d){return x(d["x"]);})
+                        .attr("cy", function(d){return y(d["y"]);})
+                        .attr("r", 3).attr("fill", function(d){
+                            
+                            if(d.attribute == "satM"){
+                                return "#de382c";
+                            }else if(d.attribute == "satW"){
+                                return "#ff7f00";
+                            }else if(d.attribute == "enrollment"){
+                                return "#4daf4a";
+                            }else if(d.attribute == "graduation"){
+                                return "#377eb8";
+                            }else if(d.attribute == "attendance"){
+                                return "#984ea3";
+                            }else if(d.attribute == "zipIncome"){
+                                return "#ff00ff"
+                            }else if(d.attribute == "APScoresQual"){
+                                return "#382a1b"
+                            }else if(d.attribute == "ps_enroll"){
+                                return "#f0e91a"
+                            }
+                        })
+
+      
+
+
+
+
+
+
+        });
+
+                    
+
+
+        //
+
+
+        // legend
+
+        svg.append("circle").attr("cx","4%").attr("cy", "80%").attr("r", 6)
+        .style("fill", "#de382c");
+
+        svg.append("text").attr("x", "6%").attr("y", "80%").text("satM")
+        .style("font-size", "12px").attr("alignment-baseline", "middle");
+
+
+
+        svg.append("circle").attr("cx","14%").attr("cy", "80%").attr("r", 6)
+        .style("fill", "#ff7f00");
+
+        svg.append("text").attr("x", "16%").attr("y", "80%").text("satW")
+        .style("font-size", "12px").attr("alignment-baseline", "middle");
+
+
+
+        svg.append("circle").attr("cx","23%").attr("cy", "80%").attr("r", 6)
+        .style("fill", "#4daf4a");
+
+        svg.append("text").attr("x", "25%").attr("y", "80%").text("enrollment")
+        .style("font-size", "12px").attr("alignment-baseline", "middle");
+
+
+
+        svg.append("circle").attr("cx","35%").attr("cy", "80%").attr("r", 6)
+        .style("fill", "#377eb8");
+
+        svg.append("text").attr("x", "37%").attr("y", "80%").text("graduation")
+        .style("font-size", "12px").attr("alignment-baseline", "middle");
+
+
+
+        svg.append("circle").attr("cx","47%").attr("cy", "80%").attr("r", 6)
+        .style("fill", "#984ea3");
+
+        svg.append("text").attr("x", "48%").attr("y", "80%").text("attendance")
+        .style("font-size", "12px").attr("alignment-baseline", "middle");
+
+        svg.append("circle").attr("cx","59%").attr("cy", "80%").attr("r", 6)
+        .style("fill", "#ff00ff");
+
+        svg.append("text").attr("x", "61%").attr("y", "80%").text("income")
+        .style("font-size", "12px").attr("alignment-baseline", "middle");
+
+        svg.append("circle").attr("cx","69%").attr("cy", "80%").attr("r", 6)
+        .style("fill", "#382a1b");
+
+        svg.append("text").attr("x", "71%").attr("y", "80%").text("AP scores")
+        .style("font-size", "12px").attr("alignment-baseline", "middle");
+
+        svg.append("circle").attr("cx","81%").attr("cy", "80%").attr("r", 6)
+        .style("fill", "#f0e91a");
+
+        svg.append("text").attr("x", "83%").attr("y", "80%").text("enroll ps")
+        .style("font-size", "12px").attr("alignment-baseline", "middle");
+        
+</script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <title>Document</title>
+    <style>
+        .bar{
+            fill: rgb(54, 145, 206);
+        }
+
+    </style>
+</head>
+<body>
+    <div><svg id="scatter1" width="650" height="400"></svg>></div>
+
+
+<script>
+        var margin = {top: 10, right: 30, bottom: 30, left: 60},
+            width = 600 - margin.left - margin.right,
+            height = 340 - margin.top - margin.bottom;
+
+            var lines = [
+                [-0.464089, 0.079310],
+                [-0.451227, 0.032115],
+                [-0.375561, -0.332120],
+                [-0.390731, -0.025550],
+                [-0.385321, -0.055901],
+                [-0.306962, -0.274655],
+                [-0.211187, 0.896193]
+            ]
+
+            var svg = d3.select("#scatter1")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+
+                svg.append("text")
+                    .attr("transform", "translate(20,0)")
+                    .attr("x",170)
+                    .attr("y", 5)
+                    .attr("font-size", "20px")
+                    .text("Biplot");
+                
+                svg.append("text")
+                .attr("transform", "rotate(45deg)")
+                .attr("x","-60")
+                .attr("y", "40%")
+                .attr("font-size", "12px")
+                .text("PC2");
+
+                svg.append("text")
+                .attr("transform", "rotate(45deg)")
+                .attr("x","40%")
+                .attr("y", "97.2%")
+                .attr("font-size", "10px")
+                .text("PC1");
+    
+        d3.csv("outcluster.csv", function(error, data) {
+        if (error) {
+            throw error;
+        }
+
+        var x=d3.scaleLinear()
+                        .domain([-8, 10])
+                        .range([0, width + 75]);
+                    svg.append("g")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(d3.axisBottom(x))
+                    
+
+
+                    var y=d3.scaleLinear()
+                        .domain([-5, 10])
+                        .range([height, 0]);
+                    svg.append("g")
+                        .call(d3.axisLeft(y));
+
+
+
+                        var lineData = [ 
+                            { "x": 1,   "y": 5},  
+                            { "x": 20,  "y": 20},
+                            { "x": 40,  "y": 10}, 
+                            { "x": 60,  "y": 40},
+                            { "x": 80,  "y": 5},  
+                            { "x": 100, "y": 60}
+                            ];
+                            
+                
+
+                    svg.append("g")
+                        .selectAll("dot")
+                        .data(data)
+                        .enter()
+                        .append("circle")
+                        .attr("cx", function(d){return x(d["principal component 1"]);})
+                        .attr("cy", function(d){return y(d["principal component 2"]);})
+                        .attr("r", 3).attr("fill", function(d){
+                            
+                            if(localStorage.getItem('Manhattan') != "steelblue" || localStorage.getItem('Bronx') != "steelblue" ||
+                            localStorage.getItem('Brooklyn') != "steelblue" || localStorage.getItem('Queens') != "steelblue" || 
+                            localStorage.getItem('StatenIsland') != "steelblue"){
+                                if(d.borough == "Manhattan"){
+                                return localStorage.getItem('Manhattan');;
+                            }else if(d.borough == "Bronx"){
+                                return localStorage.getItem('Bronx');;
+                            }else if(d.borough == "Brooklyn"){
+                                return localStorage.getItem('Brooklyn');;
+                            }else if(d.borough == "Queens"){
+                                return localStorage.getItem('Queens');;
+                            }else if(d.borough == "StatenIsland"){
+                                return localStorage.getItem('StatenIsland');;
+                            }
+                            }
+                            
+
+                            if(d.clusters == 0){
+                                    return localStorage.getItem('cluster1');
+                                }else if(d.clusters == 1){
+                                    return localStorage.getItem('cluster2');
+                                }else if(d.clusters == 2){
+                                    return localStorage.getItem('cluster3');
+                                }
+                        })
+
+
+                        //can add extra attribute for each line for identification
+           d3.csv("lines.csv", function(error, data2){
+            svg.append("path")
+                .datum(data2)
+                .attr("fill", "none")
+                .attr("stroke", "#000000")
+                .attr("stroke-width", 1.5)
+                .attr("d", d3.line()
+                    .x(function(d) { return x(d.x * 10) })
+                    .y(function(d) { return y(d.y * 10) })
+                    )
+            
+            svg
+            .append("g")
+            .selectAll("dot")
+            .data(data2)
+            .enter()
+            .append("circle")
+                .attr("cx", function(d) { return x(d.x) } )
+                .attr("cy", function(d) { return y(d.y) } )
+                .attr("r", .1)
+                .attr("fill", "#000000")
+            
+
+           });       
+
+
+
+
+
+
+        });
+
+                    
+
+
+        //
+
+
+        // legend
+
+        
+
+        svg.append("circle").attr("cx","7%").attr("cy", "80%").attr("r", 6)
+        .style("fill", "#de382c");
+
+        svg.append("text").attr("x", "9%").attr("y", "80%").text("Manhattan")
+        .style("font-size", "12px").attr("alignment-baseline", "middle");
+
+
+
+        svg.append("circle").attr("cx","20%").attr("cy", "80%").attr("r", 6)
+        .style("fill", "#ff7f00");
+
+        svg.append("text").attr("x", "22%").attr("y", "80%").text("Bronx")
+        .style("font-size", "12px").attr("alignment-baseline", "middle");
+
+
+
+        svg.append("circle").attr("cx","29%").attr("cy", "80%").attr("r", 6)
+        .style("fill", "#4daf4a");
+
+        svg.append("text").attr("x", "31%").attr("y", "80%").text("Brooklyn")
+        .style("font-size", "12px").attr("alignment-baseline", "middle");
+
+
+
+        svg.append("circle").attr("cx","40%").attr("cy", "80%").attr("r", 6)
+        .style("fill", "#377eb8");
+
+        svg.append("text").attr("x", "42%").attr("y", "80%").text("Queens")
+        .style("font-size", "12px").attr("alignment-baseline", "middle");
+
+
+
+        svg.append("circle").attr("cx","50%").attr("cy", "80%").attr("r", 6)
+        .style("fill", "#984ea3");
+
+        svg.append("text").attr("x", "52%").attr("y", "80%").text("Staten Island")
+        .style("font-size", "12px").attr("alignment-baseline", "middle");
+        
+</script>
+</body>
+</html>

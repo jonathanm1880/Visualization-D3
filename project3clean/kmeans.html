@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <title>Document</title>
+    <style>
+        .bar{
+            fill: rgb(54, 145, 206);
+        }
+
+    </style>
+</head>
+<body>
+    <div><svg id="scatter1" width="650" height="400"></svg>></div>
+    <div><p>Elbow method line graph. Data from pca.py file...</p>
+    <p>Very odd elbow chart, 3 seems to be the best value of K to me.</p>
+        
+
+        <img src="elbow.png" alt="">
+    </div>
+
+    <div id="elb"></div>
+
+
+<script>
+        localStorage.setItem('cluster1', 'red');
+        localStorage.setItem('cluster2', 'green');
+        localStorage.setItem('cluster3', 'blue');
+
+        var margin = {top: 10, right: 30, bottom: 30, left: 60},
+            width = 600 - margin.left - margin.right,
+            height = 340 - margin.top - margin.bottom;
+
+            var lines = [
+                [-0.464089, 0.079310],
+                [-0.451227, 0.032115],
+                [-0.375561, -0.332120],
+                [-0.390731, -0.025550],
+                [-0.385321, -0.055901],
+                [-0.306962, -0.274655],
+                [-0.211187, 0.896193]
+            ]
+
+            var svg = d3.select("#scatter1")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+
+                svg.append("text")
+                    .attr("transform", "translate(20,0)")
+                    .attr("x",170)
+                    .attr("y", 5)
+                    .attr("font-size", "20px")
+                    .text("K-means Clustering");
+                
+                svg.append("text")
+                .attr("transform", "rotate(45deg)")
+                .attr("x","-60")
+                .attr("y", "40%")
+                .attr("font-size", "12px")
+                .text("PC2");
+
+                svg.append("text")
+                .attr("transform", "rotate(45deg)")
+                .attr("x","40%")
+                .attr("y", "97.2%")
+                .attr("font-size", "10px")
+                .text("PC1");
+    
+        d3.csv("outcluster.csv", function(error, data) {
+        if (error) {
+            throw error;
+        }
+
+        var x=d3.scaleLinear()
+                        .domain([-8, 10])
+                        .range([0, width + 75]);
+                    svg.append("g")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(d3.axisBottom(x))
+                    
+
+
+                    var y=d3.scaleLinear()
+                        .domain([-5, 10])
+                        .range([height, 0]);
+                    svg.append("g")
+                        .call(d3.axisLeft(y));
+                            
+                
+
+                    svg.append("g")
+                        .selectAll("dot")
+                        .data(data)
+                        .enter()
+                        .append("circle")
+                        .attr("cx", function(d){return x(d["principal component 1"]);})
+                        .attr("cy", function(d){return y(d["principal component 2"]);})
+                        .attr("r", 3).attr("fill", function(d){
+                            
+                            if(d.clusters == 0){
+                                return localStorage.getItem('cluster1');
+                            }else if(d.clusters == 1){
+                                return localStorage.getItem('cluster2');
+                            }else if(d.clusters == 2){
+                                return localStorage.getItem('cluster3');
+                            }
+
+                        }).on('click', function(d){
+
+                            if (d.clusters == 0){
+                                if(localStorage.getItem('cluster1') == "steelblue"){
+                                    localStorage.setItem('cluster1', 'red')
+                                }else{
+                                    localStorage.setItem('cluster1', 'steelblue')
+                                }
+
+                                d3.select(this).style("fill", localStorage.getItem('cluster1'));
+                                
+                            }else if(d.clusters == 1){
+                                if(localStorage.getItem('cluster2') == "steelblue"){
+                                    localStorage.setItem('cluster2', 'green')
+                                }else{
+                                    localStorage.setItem('cluster2', 'steelblue')
+                                }
+
+                                d3.select(this).style("fill", localStorage.getItem('cluster2'));
+
+                            }else if(d.clusters == 2){
+                                if(localStorage.getItem('cluster3') == "steelblue"){
+                                    localStorage.setItem('cluster3', 'blue')
+                                }else{
+                                    localStorage.setItem('cluster3', 'steelblue')
+                                }
+
+                                d3.select(this).style("fill", localStorage.getItem('cluster3'));
+                            }
+                        })
+
+                console.log(localStorage.getItem('cluster1'));
+
+
+
+
+        });
+
+                    
+
+
+        //
+
+
+        // legend
+
+        
+
+        svg.append("circle").attr("cx","7%").attr("cy", "80%").attr("r", 6)
+        .style("fill", "red");
+
+        svg.append("text").attr("x", "9%").attr("y", "80%").text("cluster 1")
+        .style("font-size", "12px").attr("alignment-baseline", "middle");
+
+
+
+        svg.append("circle").attr("cx","21%").attr("cy", "80%").attr("r", 6)
+        .style("fill", "green");
+
+        svg.append("text").attr("x", "23%").attr("y", "80%").text("cluster 2")
+        .style("font-size", "12px").attr("alignment-baseline", "middle");
+
+
+
+        svg.append("circle").attr("cx","35%").attr("cy", "80%").attr("r", 6)
+        .style("fill", "blue");
+
+        svg.append("text").attr("x", "37%").attr("y", "80%").text("cluster 3")
+        .style("font-size", "12px").attr("alignment-baseline", "middle");
+
+
+
+        // svg.append("circle").attr("cx","40%").attr("cy", "80%").attr("r", 6)
+        // .style("fill", "#377eb8");
+
+        // svg.append("text").attr("x", "42%").attr("y", "80%").text("Queens")
+        // .style("font-size", "12px").attr("alignment-baseline", "middle");
+
+
+
+        // svg.append("circle").attr("cx","50%").attr("cy", "80%").attr("r", 6)
+        // .style("fill", "#984ea3");
+
+        // svg.append("text").attr("x", "52%").attr("y", "80%").text("Staten Island")
+        // .style("font-size", "12px").attr("alignment-baseline", "middle");
+        
+</script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <title>Document</title>
+    <style>
+    </style>
+</head>
+<body>
+    <div><svg id="scatter1" width="1500" height="800"></svg>></div>
+
+<script>
+        var margin = {top: 10, right: 30, bottom: 30, left: 60},
+            width = 600 - margin.left - margin.right,
+            height = 340 - margin.top - margin.bottom;
+
+            var svg = d3.select("#scatter1")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+
+                svg.append("text")
+                    .attr("transform", "translate(20,0)")
+                    .attr("x",170)
+                    .attr("y", 5)
+                    .attr("font-size", "20px")
+                    .text("MDS plot");
+                
+                svg.append("text")
+                .attr("transform", "rotate(45deg)")
+                .attr("x","-60")
+                .attr("y", "40%")
+                .attr("font-size", "12px")
+                .text("Y");
+
+                svg.append("text")
+                .attr("transform", "rotate(45deg)")
+                .attr("x","40%")
+                .attr("y", "97.2%")
+                .attr("font-size", "10px")
+                .text("X");
+    
+        d3.csv("out22.csv", function(error, data) {
+        if (error) {
+            throw error;
+        }
+
+        var x=d3.scaleLinear()
+                        .domain([-900, 2000])
+                        .range([0, width + 75]);
+                    svg.append("g")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(d3.axisBottom(x))
+                    
+
+
+                    var y=d3.scaleLinear()
+                        .domain([-1000, 1500])
+                        .range([height, 0]);
+                    svg.append("g")
+                        .call(d3.axisLeft(y));
+                
+
+                    svg.append("g")
+                        .selectAll("dot")
+                        .data(data)
+                        .enter()
+                        .append("circle")
+                        .attr("cx", function(d){return x(d["x"]);})
+                        .attr("cy", function(d){return y(d["y"]);})
+                        .attr("r", 3).attr("fill", function(d){
+
+                            console.log(d);
+                            
+                            // if(d.borough == "Manhattan"){
+                            //     return localStorage.getItem('Manhattan');
+                            // }else if(d.borough == "Bronx"){
+                            //     return localStorage.getItem('Bronx');
+                            // }else if(d.borough == "Brooklyn"){
+                            //     return localStorage.getItem('Brooklyn');
+                            // }else if(d.borough == "Queens"){
+                            //     return localStorage.getItem('Queens');
+                            // }else if(d.borough == "StatenIsland"){
+                            //     return localStorage.getItem('StatenIsland');
+                            // }else{
+                            //     "red";
+                            // }
+
+                            if(localStorage.getItem('Manhattan') != "steelblue" || localStorage.getItem('Bronx') != "steelblue" ||
+                            localStorage.getItem('Brooklyn') != "steelblue" || localStorage.getItem('Queens') != "steelblue" || 
+                            localStorage.getItem('StatenIsland') != "steelblue"){
+                                if(d.borough == "Manhattan"){
+                                return localStorage.getItem('Manhattan');;
+                            }else if(d.borough == "Bronx"){
+                                return localStorage.getItem('Bronx');;
+                            }else if(d.borough == "Brooklyn"){
+                                return localStorage.getItem('Brooklyn');;
+                            }else if(d.borough == "Queens"){
+                                return localStorage.getItem('Queens');;
+                            }else if(d.borough == "StatenIsland"){
+                                return localStorage.getItem('StatenIsland');;
+                            }
+                            }
+                            
+
+                            if(d.clusters == 0){
+                                    return localStorage.getItem('cluster1');
+                                }else if(d.clusters == 1){
+                                    return localStorage.getItem('cluster2');
+                                }else if(d.clusters == 2){
+                                    return localStorage.getItem('cluster3');
+                                }
+                            
+                        });
+
+      
+
+
+
+
+
+
+        });
+
+                    
+
+
+        //
+
+
+        // legend
+
+       
+        
+</script>
+</body>
+</html>
